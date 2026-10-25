@@ -63,6 +63,12 @@ type IdempotencyRecord func(*sql.Selector)
 // IdentityAdoptionDecision is the predicate function for identityadoptiondecision builders.
 type IdentityAdoptionDecision func(*sql.Selector)
 
+// InvoiceApplication is the predicate function for invoiceapplication builders.
+type InvoiceApplication func(*sql.Selector)
+
+// InvoiceApplicationItem is the predicate function for invoiceapplicationitem builders.
+type InvoiceApplicationItem func(*sql.Selector)
+
 // PaymentAuditLog is the predicate function for paymentauditlog builders.
 type PaymentAuditLog func(*sql.Selector)
 

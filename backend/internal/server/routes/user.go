@@ -119,6 +119,16 @@ func RegisterUserRoutes(
 			announcements.POST("/:id/read", h.Announcement.MarkRead)
 		}
 
+		// 开票申请
+		invoice := authenticated.Group("/invoice")
+		{
+			invoice.GET("/eligible-orders", h.Invoice.ListEligibleOrders)
+			invoice.GET("/applications", h.Invoice.ListApplications)
+			invoice.POST("/applications", h.Invoice.CreateApplication)
+			invoice.GET("/applications/:id", h.Invoice.GetApplication)
+			invoice.POST("/applications/:id/cancel", h.Invoice.CancelApplication)
+		}
+
 		// 卡密兑换
 		redeem := authenticated.Group("/redeem")
 		{

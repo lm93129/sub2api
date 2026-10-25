@@ -51,6 +51,9 @@ func RegisterAdminRoutes(
 		// 公告管理
 		registerAnnouncementRoutes(admin, h)
 
+		// 开票申请管理
+		registerInvoiceApplicationRoutes(admin, h)
+
 		// OpenAI OAuth
 		registerOpenAIOAuthRoutes(admin, h)
 
@@ -450,6 +453,21 @@ func registerAnnouncementRoutes(admin *gin.RouterGroup, h *handler.Handlers) {
 		announcements.PUT("/:id", h.Admin.Announcement.Update)
 		announcements.DELETE("/:id", h.Admin.Announcement.Delete)
 		announcements.GET("/:id/read-status", h.Admin.Announcement.ListReadStatus)
+	}
+}
+
+// registerInvoiceApplicationRoutes 注册管理端开票申请路由。
+func registerInvoiceApplicationRoutes(admin *gin.RouterGroup, h *handler.Handlers) {
+	invoice := admin.Group("/invoice")
+	{
+		applications := invoice.Group("/applications")
+		{
+			applications.GET("", h.Admin.InvoiceApplication.ListApplications)
+			applications.GET("/:id", h.Admin.InvoiceApplication.GetApplication)
+			applications.POST("/:id/approve", h.Admin.InvoiceApplication.ApproveApplication)
+			applications.POST("/:id/reject", h.Admin.InvoiceApplication.RejectApplication)
+			applications.POST("/:id/issue", h.Admin.InvoiceApplication.IssueApplication)
+		}
 	}
 }
 

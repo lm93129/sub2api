@@ -606,6 +606,21 @@ const OrderListIcon = {
     )
 }
 
+const ReceiptIcon = {
+  render: () =>
+    h(
+      'svg',
+      { fill: 'none', viewBox: '0 0 24 24', stroke: 'currentColor', 'stroke-width': '1.5' },
+      [
+        h('path', {
+          'stroke-linecap': 'round',
+          'stroke-linejoin': 'round',
+          d: 'M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75a.75.75 0 01.75-.75h9a.75.75 0 01.75.75v8.25a.75.75 0 01-.75.75h-2.25a.75.75 0 01-.75-.75v-1.5a.75.75 0 00-.75-.75h-3.75a.75.75 0 00-.75.75v1.5a.75.75 0 01-.75.75H3.75a.75.75 0 01-.75-.75V9a.75.75 0 01.75-.75h9a.75.75 0 01.75.75v1.5a.75.75 0 00.75.75h3.75a.75.75 0 00.75-.75V9z'
+        })
+      ]
+    )
+}
+
 const ChevronDoubleRightIcon = {
   render: () =>
     h(
@@ -731,6 +746,7 @@ function buildSelfNavItems(withDashboard: boolean): NavItem[] {
     { path: '/subscriptions', label: t('nav.mySubscriptions'), icon: CreditCardIcon, hideInSimpleMode: true, featureFlag: flagSubscription },
     { path: '/purchase', label: purchaseNavLabel.value, icon: RechargeSubscriptionIcon, hideInSimpleMode: true, featureFlag: flagPayment },
     { path: '/orders', label: t('nav.myOrders'), icon: OrderListIcon, hideInSimpleMode: true, featureFlag: flagPayment },
+    { path: '/invoices', label: t('nav.invoiceApplications'), icon: ReceiptIcon, hideInSimpleMode: true, featureFlag: flagPayment },
     { path: '/redeem', label: t('nav.redeem'), icon: GiftIcon, hideInSimpleMode: true },
     { path: '/affiliate', label: t('nav.affiliate'), icon: UsersIcon, hideInSimpleMode: true, featureFlag: flagAffiliate },
     { path: '/profile', label: t('nav.profile'), icon: UserIcon },
@@ -833,6 +849,7 @@ const adminNavItems = computed((): NavItem[] => {
         { path: '/admin/orders/dashboard', label: t('nav.paymentDashboard'), icon: ChartIcon },
         { path: '/admin/orders', label: t('nav.orderManagement'), icon: OrderIcon },
         { path: '/admin/orders/plans', label: t('nav.paymentPlans'), icon: CreditCardIcon },
+        { path: '/admin/invoices', label: t('nav.invoiceApplications'), icon: ReceiptIcon },
       ],
     },
     { path: '/admin/usage', label: t('nav.usage'), icon: ChartIcon },

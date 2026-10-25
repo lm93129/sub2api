@@ -1098,6 +1098,110 @@ var (
 			},
 		},
 	}
+	// InvoiceApplicationsColumns holds the columns for the "invoice_applications" table.
+	InvoiceApplicationsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt64, Increment: true},
+		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "timestamptz"}},
+		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "timestamptz"}},
+		{Name: "user_id", Type: field.TypeInt64},
+		{Name: "user_email", Type: field.TypeString, Size: 255, Default: ""},
+		{Name: "user_name", Type: field.TypeString, Size: 100, Default: ""},
+		{Name: "status", Type: field.TypeString, Size: 20, Default: "PENDING"},
+		{Name: "invoice_type", Type: field.TypeString, Size: 30, Default: "electron_normal"},
+		{Name: "title_type", Type: field.TypeString, Size: 20, Default: "personal"},
+		{Name: "title", Type: field.TypeString, Size: 200},
+		{Name: "tax_number", Type: field.TypeString, Size: 64, Default: ""},
+		{Name: "registered_address", Type: field.TypeString, Size: 255, Default: ""},
+		{Name: "registered_phone", Type: field.TypeString, Size: 50, Default: ""},
+		{Name: "bank_name", Type: field.TypeString, Size: 200, Default: ""},
+		{Name: "bank_account", Type: field.TypeString, Size: 100, Default: ""},
+		{Name: "email", Type: field.TypeString, Size: 255},
+		{Name: "remark", Type: field.TypeString, Default: "", SchemaType: map[string]string{"postgres": "text"}},
+		{Name: "total_amount", Type: field.TypeFloat64, Default: 0, SchemaType: map[string]string{"postgres": "decimal(20,2)"}},
+		{Name: "invoice_amount", Type: field.TypeFloat64, Nullable: true, SchemaType: map[string]string{"postgres": "decimal(20,2)"}},
+		{Name: "invoice_number", Type: field.TypeString, Size: 64, Default: ""},
+		{Name: "invoice_code", Type: field.TypeString, Size: 64, Default: ""},
+		{Name: "issued_at", Type: field.TypeTime, Nullable: true, SchemaType: map[string]string{"postgres": "timestamptz"}},
+		{Name: "reviewed_by", Type: field.TypeInt64, Nullable: true},
+		{Name: "reviewed_at", Type: field.TypeTime, Nullable: true, SchemaType: map[string]string{"postgres": "timestamptz"}},
+		{Name: "rejected_reason", Type: field.TypeString, Default: "", SchemaType: map[string]string{"postgres": "text"}},
+		{Name: "admin_remark", Type: field.TypeString, Default: "", SchemaType: map[string]string{"postgres": "text"}},
+	}
+	// InvoiceApplicationsTable holds the schema information for the "invoice_applications" table.
+	InvoiceApplicationsTable = &schema.Table{
+		Name:       "invoice_applications",
+		Columns:    InvoiceApplicationsColumns,
+		PrimaryKey: []*schema.Column{InvoiceApplicationsColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "invoiceapplication_user_id",
+				Unique:  false,
+				Columns: []*schema.Column{InvoiceApplicationsColumns[3]},
+			},
+			{
+				Name:    "invoiceapplication_user_id_status",
+				Unique:  false,
+				Columns: []*schema.Column{InvoiceApplicationsColumns[3], InvoiceApplicationsColumns[6]},
+			},
+			{
+				Name:    "invoiceapplication_status",
+				Unique:  false,
+				Columns: []*schema.Column{InvoiceApplicationsColumns[6]},
+			},
+			{
+				Name:    "invoiceapplication_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{InvoiceApplicationsColumns[1]},
+			},
+		},
+	}
+	// InvoiceApplicationItemsColumns holds the columns for the "invoice_application_items" table.
+	InvoiceApplicationItemsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt64, Increment: true},
+		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "timestamptz"}},
+		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "timestamptz"}},
+		{Name: "order_id", Type: field.TypeInt64},
+		{Name: "order_no", Type: field.TypeString, Size: 64, Default: ""},
+		{Name: "amount", Type: field.TypeFloat64, Default: 0, SchemaType: map[string]string{"postgres": "decimal(20,2)"}},
+		{Name: "currency", Type: field.TypeString, Size: 10, Default: "CNY"},
+		{Name: "paid_at", Type: field.TypeTime, Nullable: true, SchemaType: map[string]string{"postgres": "timestamptz"}},
+		{Name: "released_at", Type: field.TypeTime, Nullable: true, SchemaType: map[string]string{"postgres": "timestamptz"}},
+		{Name: "application_id", Type: field.TypeInt64},
+	}
+	// InvoiceApplicationItemsTable holds the schema information for the "invoice_application_items" table.
+	InvoiceApplicationItemsTable = &schema.Table{
+		Name:       "invoice_application_items",
+		Columns:    InvoiceApplicationItemsColumns,
+		PrimaryKey: []*schema.Column{InvoiceApplicationItemsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "invoice_application_items_invoice_applications_items",
+				Columns:    []*schema.Column{InvoiceApplicationItemsColumns[9]},
+				RefColumns: []*schema.Column{InvoiceApplicationsColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "invoiceapplicationitem_application_id",
+				Unique:  false,
+				Columns: []*schema.Column{InvoiceApplicationItemsColumns[9]},
+			},
+			{
+				Name:    "invoiceapplicationitem_released_at",
+				Unique:  false,
+				Columns: []*schema.Column{InvoiceApplicationItemsColumns[8]},
+			},
+			{
+				Name:    "invoiceapplicationitem_order_id",
+				Unique:  true,
+				Columns: []*schema.Column{InvoiceApplicationItemsColumns[3]},
+				Annotation: &entsql.IndexAnnotation{
+					Where: "released_at IS NULL",
+				},
+			},
+		},
+	}
 	// PaymentAuditLogsColumns holds the columns for the "payment_audit_logs" table.
 	PaymentAuditLogsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt64, Increment: true},
@@ -2109,6 +2213,8 @@ var (
 		GroupsTable,
 		IdempotencyRecordsTable,
 		IdentityAdoptionDecisionsTable,
+		InvoiceApplicationsTable,
+		InvoiceApplicationItemsTable,
 		PaymentAuditLogsTable,
 		PaymentOrdersTable,
 		PaymentProviderInstancesTable,
@@ -2205,6 +2311,13 @@ func init() {
 	IdentityAdoptionDecisionsTable.ForeignKeys[1].RefTable = PendingAuthSessionsTable
 	IdentityAdoptionDecisionsTable.Annotation = &entsql.Annotation{
 		Table: "identity_adoption_decisions",
+	}
+	InvoiceApplicationsTable.Annotation = &entsql.Annotation{
+		Table: "invoice_applications",
+	}
+	InvoiceApplicationItemsTable.ForeignKeys[0].RefTable = InvoiceApplicationsTable
+	InvoiceApplicationItemsTable.Annotation = &entsql.Annotation{
+		Table: "invoice_application_items",
 	}
 	PaymentAuditLogsTable.Annotation = &entsql.Annotation{
 		Table: "payment_audit_logs",

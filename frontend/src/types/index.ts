@@ -2519,3 +2519,104 @@ export type {
   PlatformQuotaWindow,
   PlatformQuotasResponse,
 } from '@/api/admin/users'
+
+// ==================== Invoice Types ====================
+
+/** 开票申请状态 */
+export type InvoiceApplicationStatus =
+  | 'PENDING'
+  | 'APPROVED'
+  | 'ISSUED'
+  | 'REJECTED'
+  | 'CANCELLED'
+
+/** 发票类型 */
+export type InvoiceType = 'electron_normal' | 'electron_special'
+
+/** 发票抬头类型 */
+export type InvoiceTitleType = 'personal' | 'company'
+
+/** 可开票的充值记录（GET /invoice/eligible-orders） */
+export interface InvoiceableOrder {
+  order_id: number
+  order_no: string
+  /** 实付金额，开票基数 */
+  pay_amount: number
+  /** 入账金额（含赠送） */
+  total_amount: number
+  currency: string
+  paid_at?: string | null
+  created_at: string
+}
+
+/** 开票申请占用的单笔充值记录明细 */
+export interface InvoiceApplicationItem {
+  id: number
+  order_id: number
+  order_no: string
+  amount: number
+  currency: string
+  paid_at?: string | null
+  released_at?: string | null
+}
+
+/** 开票申请单 */
+export interface InvoiceApplication {
+  id: number
+  user_id: number
+  user_email: string
+  user_name: string
+  status: InvoiceApplicationStatus
+  invoice_type: InvoiceType
+  title_type: InvoiceTitleType
+  title: string
+  tax_number: string
+  registered_address: string
+  registered_phone: string
+  bank_name: string
+  bank_account: string
+  email: string
+  remark: string
+  total_amount: number
+  invoice_amount?: number | null
+  invoice_number: string
+  invoice_code: string
+  issued_at?: string | null
+  reviewed_by?: number | null
+  reviewed_at?: string | null
+  rejected_reason: string
+  admin_remark: string
+  created_at: string
+  updated_at: string
+  items: InvoiceApplicationItem[]
+}
+
+/** 提交开票申请的请求体 */
+export interface CreateInvoiceApplicationRequest {
+  order_ids: number[]
+  invoice_type: InvoiceType
+  title_type: InvoiceTitleType
+  title: string
+  tax_number?: string
+  registered_address?: string
+  registered_phone?: string
+  bank_name?: string
+  bank_account?: string
+  email: string
+  remark?: string
+}
+
+/** 管理端驳回开票申请 */
+export interface RejectInvoiceApplicationRequest {
+  reason: string
+  remark?: string
+}
+
+/** 管理端登记开票信息 */
+export interface IssueInvoiceApplicationRequest {
+  invoice_number: string
+  invoice_code?: string
+  invoice_amount: number
+  issued_at?: string | null
+  admin_remark?: string
+}

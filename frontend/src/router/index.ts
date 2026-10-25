@@ -327,6 +327,19 @@ const routes: RouteRecordRaw[] = [
     }
   },
   {
+    path: '/invoices',
+    name: 'InvoiceApplications',
+    component: () => import('@/views/user/InvoiceApplicationsView.vue'),
+    meta: {
+      requiresAuth: true,
+      requiresAdmin: false,
+      title: 'Invoice Applications',
+      titleKey: 'nav.invoiceApplications',
+      descriptionKey: 'invoice.description',
+      requiresPayment: true
+    }
+  },
+  {
     path: '/payment/qrcode',
     name: 'PaymentQRCode',
     component: () => import('@/views/user/PaymentQRCodeView.vue'),
@@ -711,6 +724,19 @@ const routes: RouteRecordRaw[] = [
       requiresAdmin: true,
       title: 'Subscription Plans',
       titleKey: 'nav.paymentPlans',
+      requiresPayment: true
+    }
+  },
+  {
+    path: '/admin/invoices',
+    name: 'AdminInvoiceApplications',
+    component: () => import('@/views/admin/InvoiceApplicationsView.vue'),
+    meta: {
+      requiresAuth: true,
+      requiresAdmin: true,
+      title: 'Invoice Applications',
+      titleKey: 'nav.invoiceApplications',
+      descriptionKey: 'admin.invoices.description',
       requiresPayment: true
     }
   },
