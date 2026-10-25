@@ -49,32 +49,6 @@ const BaseDialogStub = {
   template: '<div v-if="show" data-test="dialog"><slot /><slot name="footer" /></div>'
 }
 
-/** Native select stub so v-model on Select can be driven from the test. */
-const SelectStub = {
-  props: ['modelValue', 'options'],
-  emits: ['update:modelValue', 'change'],
-  setup(
-    props: { options: Array<{ value: unknown; label: string }> },
-    { emit }: { emit: (event: string, ...args: unknown[]) => void }
-  ) {
-    const onChange = (event: Event) => {
-      const raw = (event.target as HTMLSelectElement).value
-      const option = props.options.find((item) => String(item.value ?? '') === raw)
-      const value = option ? option.value : raw
-      emit('update:modelValue', value)
-      emit('change', value, option ?? null)
-    }
-    return { onChange }
-  },
-  template: `
-    <select :value="modelValue ?? ''" @change="onChange">
-      <option v-for="option in options" :key="String(option.value ?? '')" :value="option.value ?? ''">
-        {{ option.label }}
-      </option>
-    </select>
-  `
-}
-
 function mountView() {
   return mount(InvoiceApplicationsView, {
     global: {
@@ -82,7 +56,6 @@ function mountView() {
         AppLayout: { template: '<div><slot /></div>' },
         DataTable: true,
         Pagination: true,
-        Select: SelectStub,
         BaseDialog: BaseDialogStub,
         ConfirmDialog: true,
         EmptyState: true,
@@ -150,30 +123,18 @@ describe('user invoice application', () => {
     expect(wrapper.text()).not.toContain('invoice.selection.needMore')
   })
 
-  it('requires a tax number for company titles and blocks submission', async () => {
+  it('renders the self-service invoicing guide above the tabs', async () => {
     const wrapper = mountView()
     await flushPromises()
 
-    wrapper.getComponent(DataTable).vm.$emit('update:selectedKeys', [2])
-    await flushPromises()
-
-    await findApplyButton(wrapper)!.trigger('click')
-    await flushPromises()
-
-    const selects = wrapper.findAll('select')
-    await selects[1].setValue('company')
-    await flushPromises()
-
-    await wrapper.find('#invoice-title').setValue('Acme Ltd')
-    await wrapper.find('#invoice-email').setValue('buyer@example.com')
-    await wrapper.find('#invoice-application-form').trigger('submit')
-    await flushPromises()
-
-    expect(wrapper.text()).toContain('invoice.form.taxNumberRequired')
-    expect(api.createApplication).not.toHaveBeenCalled()
+    expect(wrapper.text()).toContain('invoice.guide.title')
+    expect(wrapper.text()).toContain('invoice.guide.subtitle')
+    expect(wrapper.text()).toContain('invoice.guide.tipSchedule')
+    expect(wrapper.text()).toContain('invoice.guide.tipMonthEnd')
+    expect(wrapper.text()).toContain('invoice.guide.tipContent')
   })
 
-  it('requires bank details for electronic special VAT invoices', async () => {
+  it('renders the filling-instructions notice without type selectors', async () => {
     const wrapper = mountView()
     await flushPromises()
 
@@ -183,8 +144,40 @@ describe('user invoice application', () => {
     await findApplyButton(wrapper)!.trigger('click')
     await flushPromises()
 
-    const selects = wrapper.findAll('select')
-    await selects[0].setValue('electron_special')
+    expect(wrapper.text()).toContain('invoice.form.noticeTitle')
+    expect(wrapper.text()).toContain('invoice.form.noticeTax')
+    expect(wrapper.text()).toContain('invoice.form.noticeEmail')
+    expect(wrapper.findAll('select')).toHaveLength(0)
+  })
+
+  it('does not require bank details when they are left empty', async () => {
+    const wrapper = mountView()
+    await flushPromises()
+
+    wrapper.getComponent(DataTable).vm.$emit('update:selectedKeys', [2])
+    await flushPromises()
+
+    await findApplyButton(wrapper)!.trigger('click')
+    await flushPromises()
+
+    await wrapper.find('#invoice-title').setValue('Acme Ltd')
+    await wrapper.find('#invoice-tax-number').setValue('91310000MA1FL0000X')
+    await wrapper.find('#invoice-email').setValue('buyer@example.com')
+    await wrapper.find('#invoice-application-form').trigger('submit')
+    await flushPromises()
+
+    expect(wrapper.text()).not.toContain('invoice.form.bankInfoRequired')
+    expect(api.createApplication).toHaveBeenCalledTimes(1)
+  })
+
+  it('requires a tax number and submits a company title by default', async () => {
+    const wrapper = mountView()
+    await flushPromises()
+
+    wrapper.getComponent(DataTable).vm.$emit('update:selectedKeys', [2])
+    await flushPromises()
+
+    await findApplyButton(wrapper)!.trigger('click')
     await flushPromises()
 
     await wrapper.find('#invoice-title').setValue('Acme Ltd')
@@ -192,8 +185,21 @@ describe('user invoice application', () => {
     await wrapper.find('#invoice-application-form').trigger('submit')
     await flushPromises()
 
-    expect(wrapper.text()).toContain('invoice.form.bankInfoRequired')
+    // Empty tax number blocks submission because the default title type is company.
+    expect(wrapper.text()).toContain('invoice.form.taxNumberRequired')
     expect(api.createApplication).not.toHaveBeenCalled()
+
+    await wrapper.find('#invoice-tax-number').setValue('91310000MA1FL0000X')
+    await wrapper.find('#invoice-application-form').trigger('submit')
+    await flushPromises()
+
+    expect(api.createApplication).toHaveBeenCalledWith(
+      expect.objectContaining({
+        invoice_type: 'electron_normal',
+        title_type: 'company',
+        tax_number: '91310000MA1FL0000X'
+      })
+    )
   })
 
   it('submits the application with the selected orders and the invoice form', async () => {
@@ -207,6 +213,7 @@ describe('user invoice application', () => {
     await flushPromises()
 
     await wrapper.find('#invoice-title').setValue('Acme Ltd')
+    await wrapper.find('#invoice-tax-number').setValue('91310000MA1FL0000X')
     await wrapper.find('#invoice-email').setValue('buyer@example.com')
     await wrapper.find('#invoice-remark').setValue('please issue')
     await wrapper.find('#invoice-application-form').trigger('submit')
@@ -216,7 +223,8 @@ describe('user invoice application', () => {
       expect.objectContaining({
         order_ids: [2],
         invoice_type: 'electron_normal',
-        title_type: 'personal',
+        title_type: 'company',
+        tax_number: '91310000MA1FL0000X',
         title: 'Acme Ltd',
         email: 'buyer@example.com',
         remark: 'please issue'

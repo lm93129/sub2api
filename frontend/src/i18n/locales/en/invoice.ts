@@ -9,6 +9,14 @@ export default {
     tabEligible: 'Eligible Orders',
     tabMyApplications: 'My Applications',
 
+    guide: {
+      title: 'Self-Service Invoicing',
+      subtitle: 'Select one or more recharge records and submit the application once the credited balance reaches the invoice amount.',
+      tipSchedule: 'Invoices are sent to your registered email in about 1-3 business days',
+      tipMonthEnd: 'Invoicing tends to be slower at month-end, so it is best to apply early.',
+      tipContent: 'Invoice content: Life and production services*Service fee'
+    },
+
     eligible: {
       empty: 'No invoiceable recharge records',
       orderNo: 'Order No',
@@ -30,6 +38,9 @@ export default {
 
     form: {
       title: 'Apply for Invoice',
+      noticeTitle: 'Filling Instructions',
+      noticeTax: 'Please double-check the tax ID — incorrect information will affect invoicing.',
+      noticeEmail: 'Please enter a valid delivery email. Multiple email addresses are supported.',
       invoiceType: 'Invoice Type',
       titleType: 'Title Type',
       invoiceTitle: 'Invoice Title',

@@ -9,6 +9,14 @@ export default {
     tabEligible: '可开票记录',
     tabMyApplications: '我的申请',
 
+    guide: {
+      title: '自助发票',
+      subtitle: '选择一笔或多笔充值记录，应到账余额累计达到开票金额后提交申请。',
+      tipSchedule: '发票需要大约1-3个工作日会发送到您的英文邮箱',
+      tipMonthEnd: '月底开票大概率会比较慢，最好提前申请。',
+      tipContent: '开票内容为生活生产服务*服务费'
+    },
+
     eligible: {
       empty: '暂无可开票的充值记录',
       orderNo: '订单号',
@@ -30,6 +38,9 @@ export default {
 
     form: {
       title: '申请开票',
+      noticeTitle: '填写注意事项',
+      noticeTax: '税号请核对无误，错误信息会影响开票。',
+      noticeEmail: '收票邮箱请填写正确，支持填写多个邮箱。',
       invoiceType: '发票类型',
       titleType: '抬头类型',
       invoiceTitle: '发票抬头',

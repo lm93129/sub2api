@@ -1,6 +1,30 @@
 <template>
   <AppLayout>
     <div class="space-y-4">
+      <!-- Self-service invoicing guide -->
+      <div class="card p-4">
+        <h2 class="text-base font-semibold text-gray-900 dark:text-white">
+          {{ t('invoice.guide.title') }}
+        </h2>
+        <p class="mt-1 text-sm text-gray-600 dark:text-gray-300">
+          {{ t('invoice.guide.subtitle') }}
+        </p>
+        <div class="mt-2 flex flex-wrap items-center gap-x-5 gap-y-1">
+          <p class="flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400">
+            <Icon name="clock" class="h-3.5 w-3.5 shrink-0" />
+            <span>{{ t('invoice.guide.tipSchedule') }}</span>
+          </p>
+          <p class="flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400">
+            <Icon name="infoCircle" class="h-3.5 w-3.5 shrink-0" />
+            <span>{{ t('invoice.guide.tipMonthEnd') }}</span>
+          </p>
+          <p class="flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400">
+            <Icon name="document" class="h-3.5 w-3.5 shrink-0" />
+            <span>{{ t('invoice.guide.tipContent') }}</span>
+          </p>
+        </div>
+      </div>
+
       <!-- Tabs -->
       <div class="card p-4">
         <div class="flex gap-2 border-b border-gray-200 dark:border-dark-600">
@@ -167,25 +191,12 @@
       @close="closeApplyDialog"
     >
       <form id="invoice-application-form" class="space-y-4" @submit.prevent="submitApplication">
-        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <div>
-            <label class="input-label" for="invoice-invoice-type">{{ t('invoice.form.invoiceType') }}</label>
-            <Select
-              id="invoice-invoice-type"
-              v-model="form.invoice_type"
-              :options="invoiceTypeOptions"
-              class="mt-1 w-full"
-            />
-          </div>
-          <div>
-            <label class="input-label" for="invoice-title-type">{{ t('invoice.form.titleType') }}</label>
-            <Select
-              id="invoice-title-type"
-              v-model="form.title_type"
-              :options="titleTypeOptions"
-              class="mt-1 w-full"
-            />
-          </div>
+        <div class="rounded-lg border border-blue-200 bg-blue-50 p-3 text-sm text-blue-800 dark:border-blue-800/50 dark:bg-blue-900/20 dark:text-blue-300">
+          <p class="font-medium">{{ t('invoice.form.noticeTitle') }}</p>
+          <ul class="mt-1 list-disc space-y-0.5 pl-5">
+            <li>{{ t('invoice.form.noticeTax') }}</li>
+            <li>{{ t('invoice.form.noticeEmail') }}</li>
+          </ul>
         </div>
 
         <div>
@@ -203,8 +214,7 @@
 
         <div>
           <label class="input-label" for="invoice-tax-number">
-            {{ t('invoice.form.taxNumber') }}
-            <span v-if="form.title_type === 'company'" class="text-red-500">*</span>
+            {{ t('invoice.form.taxNumber') }} *
           </label>
           <input
             id="invoice-tax-number"
@@ -241,31 +251,26 @@
           <div>
             <label class="input-label" for="invoice-bank-name">
               {{ t('invoice.form.bankName') }}
-              <span v-if="form.invoice_type === 'electron_special'" class="text-red-500">*</span>
             </label>
             <input
               id="invoice-bank-name"
               v-model="form.bank_name"
               type="text"
               class="input mt-1 w-full"
-              :class="errors.bank_info ? 'input-error' : ''"
             />
           </div>
           <div>
             <label class="input-label" for="invoice-bank-account">
               {{ t('invoice.form.bankAccount') }}
-              <span v-if="form.invoice_type === 'electron_special'" class="text-red-500">*</span>
             </label>
             <input
               id="invoice-bank-account"
               v-model="form.bank_account"
               type="text"
               class="input mt-1 w-full"
-              :class="errors.bank_info ? 'input-error' : ''"
             />
           </div>
         </div>
-        <p v-if="errors.bank_info" class="input-error-text -mt-2">{{ errors.bank_info }}</p>
 
         <div>
           <label class="input-label" for="invoice-email">{{ t('invoice.form.email') }} *</label>
@@ -384,8 +389,6 @@ import type {
   CreateInvoiceApplicationRequest,
   InvoiceApplication,
   InvoiceApplicationStatus,
-  InvoiceType,
-  InvoiceTitleType,
   InvoiceableOrder
 } from '@/types'
 import AppLayout from '@/components/layout/AppLayout.vue'
@@ -395,7 +398,6 @@ import DataTable from '@/components/common/DataTable.vue'
 import EmptyState from '@/components/common/EmptyState.vue'
 import Icon from '@/components/icons/Icon.vue'
 import Pagination from '@/components/common/Pagination.vue'
-import Select from '@/components/common/Select.vue'
 
 const { t } = useI18n()
 const appStore = useAppStore()
@@ -552,8 +554,6 @@ const showApplyDialog = ref(false)
 const submitting = ref(false)
 
 const form = reactive({
-  invoice_type: 'electron_normal' as InvoiceType,
-  title_type: 'personal' as InvoiceTitleType,
   title: '',
   tax_number: '',
   registered_address: '',
@@ -567,19 +567,8 @@ const form = reactive({
 const errors = reactive({
   title: '',
   tax_number: '',
-  bank_info: '',
   email: ''
 })
-
-const invoiceTypeOptions = computed(() => [
-  { value: 'electron_normal', label: t('invoice.invoiceType.electron_normal') },
-  { value: 'electron_special', label: t('invoice.invoiceType.electron_special') }
-])
-
-const titleTypeOptions = computed(() => [
-  { value: 'personal', label: t('invoice.titleType.personal') },
-  { value: 'company', label: t('invoice.titleType.company') }
-])
 
 function openApplyDialog() {
   if (!canSubmit.value) {
@@ -588,7 +577,6 @@ function openApplyDialog() {
   }
   errors.title = ''
   errors.tax_number = ''
-  errors.bank_info = ''
   errors.email = ''
   showApplyDialog.value = true
 }
@@ -599,9 +587,8 @@ function closeApplyDialog() {
 
 function validateForm(): boolean {
   errors.title = form.title.trim() ? '' : t('invoice.form.titleRequired')
+  errors.tax_number = form.tax_number.trim() ? '' : t('invoice.form.taxNumberRequired')
   errors.email = ''
-  errors.tax_number = ''
-  errors.bank_info = ''
 
   if (!form.email.trim()) {
     errors.email = t('invoice.form.emailRequired')
@@ -609,15 +596,7 @@ function validateForm(): boolean {
     errors.email = t('invoice.form.emailInvalid')
   }
 
-  if (form.title_type === 'company' && !form.tax_number.trim()) {
-    errors.tax_number = t('invoice.form.taxNumberRequired')
-  }
-
-  if (form.invoice_type === 'electron_special' && (!form.bank_name.trim() || !form.bank_account.trim())) {
-    errors.bank_info = t('invoice.form.bankInfoRequired')
-  }
-
-  return !errors.title && !errors.email && !errors.tax_number && !errors.bank_info
+  return !errors.title && !errors.tax_number && !errors.email
 }
 
 async function submitApplication() {
@@ -629,8 +608,8 @@ async function submitApplication() {
 
   const payload: CreateInvoiceApplicationRequest = {
     order_ids: selectedOrderIds.value,
-    invoice_type: form.invoice_type,
-    title_type: form.title_type,
+    invoice_type: 'electron_normal',
+    title_type: 'company',
     title: form.title.trim(),
     tax_number: form.tax_number.trim(),
     registered_address: form.registered_address.trim(),
