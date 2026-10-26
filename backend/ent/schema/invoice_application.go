@@ -24,6 +24,7 @@ import (
 // user_id 与 invoice_application_items.order_id 均为纯整数列，不建外键：
 //   - payment_orders 使用硬删除，建外键会阻断订单删除，改变既有行为；
 //   - 用户被删除后开票凭证仍需留存以备审计。
+//
 // 因此用户邮箱、用户名与订单号、实付金额均在本表/明细表冗余存储快照。
 type InvoiceApplication struct {
 	ent.Schema

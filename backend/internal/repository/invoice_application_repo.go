@@ -220,9 +220,7 @@ func (r *invoiceApplicationRepository) Create(ctx context.Context, app *service.
 
 	applyInvoiceApplicationEntityToService(app, created)
 	app.Items = make([]service.InvoiceApplicationItem, 0, len(items))
-	for _, it := range items {
-		app.Items = append(app.Items, it)
-	}
+	app.Items = append(app.Items, items...)
 	return nil
 }
 

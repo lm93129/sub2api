@@ -25,19 +25,19 @@ type InvoiceApplicationOrder struct {
 
 // InvoiceApplicationItem 是申请占用的���笔充值记录。
 type InvoiceApplicationItem struct {
-	ID            int64 `json:"id"`
-	OrderID       int64 `json:"order_id"`
-	OrderNo       string `json:"order_no"`
-	Amount        float64 `json:"amount"`
-	Currency      string `json:"currency"`
-	PaidAt        *time.Time `json:"paid_at,omitempty"`
-	ReleasedAt    *time.Time `json:"released_at,omitempty"`
+	ID         int64      `json:"id"`
+	OrderID    int64      `json:"order_id"`
+	OrderNo    string     `json:"order_no"`
+	Amount     float64    `json:"amount"`
+	Currency   string     `json:"currency"`
+	PaidAt     *time.Time `json:"paid_at,omitempty"`
+	ReleasedAt *time.Time `json:"released_at,omitempty"`
 }
 
 // InvoiceApplication 是开票申请。
 type InvoiceApplication struct {
-	ID       int64 `json:"id"`
-	UserID   int64 `json:"user_id"`
+	ID     int64 `json:"id"`
+	UserID int64 `json:"user_id"`
 	// UserEmail 申请用户邮箱
 	UserEmail string `json:"user_email"`
 	// UserName 申请用户名称

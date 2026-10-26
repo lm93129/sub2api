@@ -166,8 +166,8 @@ type InvoiceApplication struct {
 	RejectedReason string
 	// AdminRemark 管理员备注
 	AdminRemark string
-	CreatedAt     time.Time
-	UpdatedAt     time.Time
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
 	// Items 关联的充值记录明细
 	Items []InvoiceApplicationItem
 }

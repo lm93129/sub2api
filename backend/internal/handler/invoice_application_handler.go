@@ -135,17 +135,17 @@ func (h *InvoiceApplicationHandler) CreateApplication(c *gin.Context) {
 	}
 
 	app, err := h.invoiceService.CreateApplication(c.Request.Context(), subject.UserID, service.CreateInvoiceApplicationInput{
-		OrderIDs:           req.OrderIDs,
-		InvoiceType:        req.InvoiceType,
-		TitleType:          req.TitleType,
-		Title:              req.Title,
-		TaxNumber:          req.TaxNumber,
-		RegisteredAddress:  req.RegisteredAddress,
-		RegisteredPhone:    req.RegisteredPhone,
-		BankName:           req.BankName,
-		BankAccount:        req.BankAccount,
-		Email:              req.Email,
-		Remark:             req.Remark,
+		OrderIDs:          req.OrderIDs,
+		InvoiceType:       req.InvoiceType,
+		TitleType:         req.TitleType,
+		Title:             req.Title,
+		TaxNumber:         req.TaxNumber,
+		RegisteredAddress: req.RegisteredAddress,
+		RegisteredPhone:   req.RegisteredPhone,
+		BankName:          req.BankName,
+		BankAccount:       req.BankAccount,
+		Email:             req.Email,
+		Remark:            req.Remark,
 	})
 	if err != nil {
 		response.ErrorFrom(c, err)

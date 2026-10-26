@@ -50,7 +50,7 @@ var (
 	ErrInvoiceApplicationBankInfoRequired        = domain.ErrInvoiceApplicationBankInfoRequired
 	ErrInvoiceApplicationEmailInvalid            = domain.ErrInvoiceApplicationEmailInvalid
 	ErrInvoiceApplicationStatusTransitionInvalid = domain.ErrInvoiceApplicationStatusTransitionInvalid
-	ErrInvoiceApplicationRejectReasonRequired   = domain.ErrInvoiceApplicationRejectReasonRequired
+	ErrInvoiceApplicationRejectReasonRequired    = domain.ErrInvoiceApplicationRejectReasonRequired
 	ErrInvoiceApplicationInvoiceInfoRequired     = domain.ErrInvoiceApplicationInvoiceInfoRequired
 	ErrInvoiceApplicationInvoiceAmountInvalid    = domain.ErrInvoiceApplicationInvoiceAmountInvalid
 )
@@ -235,8 +235,8 @@ type InvoiceApplicationRepository interface {
 
 // InvoiceApplicationService 实现开票申请的申请、审核与开票登记。
 type InvoiceApplicationService struct {
-	repo       InvoiceApplicationRepository
-	entClient  *dbent.Client
+	repo      InvoiceApplicationRepository
+	entClient *dbent.Client
 }
 
 // NewInvoiceApplicationService 创建开票申请服务。
